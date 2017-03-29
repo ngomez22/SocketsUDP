@@ -1,5 +1,9 @@
 package server;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -24,6 +28,26 @@ public class Server {
 					sendData.length, IPAddress, port);
 			serverSocket.send(sendPacket);
 		}
+	}
+	
+	public Object getObject(byte[] yourBytes) {
+		Object o = null;
+		try
+		{
+			ByteArrayInputStream bis = new ByteArrayInputStream(yourBytes);
+			ObjectInput in = null;
+			in = new ObjectInputStream(bis);
+			o = in.readObject();
+
+			if (in != null) {
+				in.close();
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		return o;
 	}
 	
 	public class Message implements Serializable {

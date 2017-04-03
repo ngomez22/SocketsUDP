@@ -1,9 +1,7 @@
 package client;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -12,24 +10,26 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 public class Client {
-
-	public static void main(String args[]) throws Exception {
-		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
+	
+	private String ip;
+	private int port;
+	private int numMessages;
+	
+	public Client(String ip, int port, int numMessages) {
+		this.ip = ip;
+		this.port = port;
+		this.numMessages = numMessages;
+	}
+	
+	public void send() throws Exception {
 		DatagramSocket clientSocket = new DatagramSocket();
-		InetAddress IPAddress = InetAddress.getByName("localhost");
-		byte[] sendData = new byte[1024];
-		byte[] receiveData = new byte[1024];
-		String sentence = inFromUser.readLine();
-		sendData = sentence.getBytes();
-		int i = 0;
-		while (i < 10) {
-			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
-			clientSocket.send(sendPacket);
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-			clientSocket.receive(receivePacket);
-			String modifiedSentence = new String(receivePacket.getData());
-			System.out.println("FROM SERVER:" + modifiedSentence);
-			i++;
+		InetAddress server = InetAddress.getByName(ip);
+		for(int i=0; i<numMessages; i++) {
+			Message m = new Message(i+1);
+			byte[] object = messageToBytes(m);
+			DatagramPacket sendData = new DatagramPacket(object, object.length, server, port);
+			clientSocket.send(sendData);
+			System.out.println("Sent object #" + i + " at " + m.getTimestamp());
 		}
 		clientSocket.close();
 	}

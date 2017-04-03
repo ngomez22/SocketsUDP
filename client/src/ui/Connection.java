@@ -17,8 +17,8 @@ public class Connection extends JPanel implements ActionListener {
 	private JTextField ipText;
 	private JLabel portLabel;
 	private JTextField portText;
-	private JLabel statusLabel;
-	private JTextField statusText;
+	private JLabel messagesLabel;
+	private JSpinner messagesText;
 	private JButton connect;
 	
 	public Connection (GUI gui) {
@@ -42,28 +42,24 @@ public class Connection extends JPanel implements ActionListener {
 	    options.add(ipPanel, BorderLayout.CENTER);
 	    options.add(portPanel, BorderLayout.EAST);
 	    
-	    statusLabel = new JLabel("Estado: ");
-	    statusText = new JTextField();
-	    statusText.setEditable(false);
+	    SpinnerModel model = new SpinnerNumberModel(100, 10, 10000, 5);     
+	    messagesText = new JSpinner(model);
+	    messagesLabel = new JLabel("Number of objects to send:");
 	    
-	    JPanel status = new JPanel(new BorderLayout());
-	    status.add(statusLabel, BorderLayout.WEST);
-	    status.add(statusText, BorderLayout.CENTER);
+	    JPanel objects = new JPanel(new BorderLayout());
+	    objects.add(messagesLabel, BorderLayout.NORTH);
+	    objects.add(messagesText, BorderLayout.CENTER);
 	    
 	    JPanel connection = new JPanel(new GridLayout(2,1));
 	    connection.add(options);
-	    connection.add(status);
+	    connection.add(objects);
 	    
-	    connect = new JButton("");
+	    connect = new JButton("Send");
 	    connectButton();
 	    connect.addActionListener(this);
 	    
 	    add(connect, BorderLayout.EAST);
 	    add(connection);
-	}
-	
-	public void changeStatus(String newState) {
-		statusText.setText(newState);
 	}
 	
 	public void connectButton() {
@@ -80,6 +76,16 @@ public class Connection extends JPanel implements ActionListener {
 	    connect.setActionCommand(DISCONNECT);
 	    revalidate();
 	    repaint();
+	}
+	
+	public int getNumberOfMessages() {
+		int num = -1;
+		try {
+			num = Integer.parseInt((String)messagesText.getValue());
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(this, "Please select a valid number of messages", "Error", JOptionPane.ERROR_MESSAGE); 
+		}
+		return num;
 	}
 
 	@Override

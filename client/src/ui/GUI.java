@@ -49,6 +49,12 @@ public class GUI extends JFrame {
 	}
 
 	public void connect() {
+		String ip = connection.getIp();
+		int port = connection.getPort();
+		int numMessages = connection.getNumberOfMessages();
+		if(port != -1 && numMessages != -1 && !ip.equals("")){
+			client = new Client(ip, port, numMessages);
+		}
 	}
 
 	public void download() {

@@ -81,9 +81,23 @@ public class Connection extends JPanel implements ActionListener {
 	public int getNumberOfMessages() {
 		int num = -1;
 		try {
-			num = Integer.parseInt((String)messagesText.getValue());
+			num = (Integer)messagesText.getValue();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(gui, "Please select a valid number of messages", "Error", JOptionPane.ERROR_MESSAGE); 
+		}
+		return num;
+	}
+	
+	public String getIp() {
+		return ipText.getText();
+	}
+	
+	public int getPort() {
+		int num = -1;
+		try {
+			num = Integer.parseInt(portText.getText());
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Please select a valid number of messages", "Error", JOptionPane.ERROR_MESSAGE); 
+			JOptionPane.showMessageDialog(gui, "Please select a valid number of messages", "Error", JOptionPane.ERROR_MESSAGE); 
 		}
 		return num;
 	}

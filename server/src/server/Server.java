@@ -10,6 +10,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import message.Message;
+
+
 public class Server {
 	public static void main(String args[]) throws Exception {
 		int serverPort = 4321;
@@ -52,35 +55,4 @@ public class Server {
 		return o;
 	}
 	
-	public class Message implements Serializable {
-		
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 4400321123717576207L;
-		private int seqNun;
-		private long timestamp;
-		
-		public Message(int seqNum) {
-			this.seqNun = seqNum;
-			this.timestamp = System.currentTimeMillis();
-		}
-
-		public int getSeqNun() {
-			return seqNun;
-		}
-
-		public long getTimestamp() {
-			return timestamp;
-		}
-		
-        private void readObject(ObjectInputStream aInputStream) throws ClassNotFoundException, IOException {
-        	aInputStream.defaultReadObject();
-		}
-		
-		private void writeObject(ObjectOutputStream aOutputStream) throws IOException {
-			aOutputStream.defaultWriteObject();
-		}
-	}
 }

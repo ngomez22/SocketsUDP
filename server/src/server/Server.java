@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -11,33 +12,34 @@ import java.net.InetAddress;
 
 public class Server {
 	public static void main(String args[]) throws Exception {
-		DatagramSocket serverSocket = new DatagramSocket(9876);
+		int serverPort = 4321;
+		if(args.length > 0) {
+			serverPort = Integer.parseInt(args[0]);
+		}
+		DatagramSocket serverSocket = new DatagramSocket(serverPort);
 		byte[] receiveData = new byte[1024];
 		byte[] sendData = new byte[1024];
+		
 		while (true) {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData,
 					receiveData.length);
 			serverSocket.receive(receivePacket);
-			String sentence = new String(receivePacket.getData());
-			System.out.println("RECEIVED: " + sentence);
+			Message recibido = getObject(receivePacket.getData());
+			System.out.println(recibido.getSeqNun());
+			System.out.println(recibido.getTimestamp());
 			InetAddress IPAddress = receivePacket.getAddress();
 			int port = receivePacket.getPort();
-			String capitalizedSentence = sentence.toUpperCase();
-			sendData = capitalizedSentence.getBytes();
-			DatagramPacket sendPacket = new DatagramPacket(sendData,
-					sendData.length, IPAddress, port);
-			serverSocket.send(sendPacket);
 		}
 	}
 	
-	public Object getObject(byte[] yourBytes) {
-		Object o = null;
+	public static Message getObject(byte[] yourBytes) {
+		Message o = null;
 		try
 		{
 			ByteArrayInputStream bis = new ByteArrayInputStream(yourBytes);
 			ObjectInput in = null;
 			in = new ObjectInputStream(bis);
-			o = in.readObject();
+			o = (Message) in.readObject();
 
 			if (in != null) {
 				in.close();
@@ -51,6 +53,12 @@ public class Server {
 	}
 	
 	public class Message implements Serializable {
+		
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 4400321123717576207L;
 		private int seqNun;
 		private long timestamp;
 		
@@ -65,6 +73,14 @@ public class Server {
 
 		public long getTimestamp() {
 			return timestamp;
-		}		
+		}
+		
+        private void readObject(ObjectInputStream aInputStream) throws ClassNotFoundException, IOException {
+        	aInputStream.defaultReadObject();
+		}
+		
+		private void writeObject(ObjectOutputStream aOutputStream) throws IOException {
+			aOutputStream.defaultWriteObject();
+		}
 	}
 }

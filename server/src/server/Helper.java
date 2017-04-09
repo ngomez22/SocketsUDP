@@ -27,9 +27,12 @@ public class Helper {
 		}
 	}
 
-
 	public String getFilename() {
 		return filename;
+	}
+	
+	public int getTotal() {
+		return total;
 	}
 	
 	public int getLostCount() {
@@ -40,5 +43,9 @@ public class Helper {
 		System.out.println("----DONE----");
 		System.out.println("Received " + count + "/" + total);
 		System.out.println("Avg. delay was " + diffSum/count);
+		count = 0;
+		diffSum = 0;
+		total = -1;
+		
 	}
 }

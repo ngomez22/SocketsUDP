@@ -37,7 +37,7 @@ public class Server {
 			int port = receivePacket.getPort();
 			long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
 			Helper ipHelper = helpers.get(ip);
-			if(ipHelper == null) {
+			if(ipHelper == null || ipHelper.getTotal() == -1) {
 				ipHelper = new Helper(filename(ip, port), msg.getTotal());
 				helpers.put(ip, ipHelper);
 			} 

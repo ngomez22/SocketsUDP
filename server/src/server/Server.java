@@ -10,12 +10,17 @@ import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.HashMap;
 
 import message.Message;
 
 
 public class Server {
+	
+	public static HashMap<String, Helper> helpers;
+	
 	public static void main(String args[]) throws Exception {
+		helpers = new HashMap<>();
 		int serverPort = 4321;
 		if(args.length > 0) {
 			serverPort = Integer.parseInt(args[0]);
@@ -28,11 +33,20 @@ public class Server {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
 			Message msg = getObject(receivePacket.getData());
-			InetAddress IPAddress = receivePacket.getAddress();
+			String ip = receivePacket.getAddress().toString();
 			int port = receivePacket.getPort();
 			long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
-			System.out.println(msg.getSeqNun() + " from " + IPAddress + ": " + timeDiff);
+			Helper ipHelper = helpers.get(ip);
+			if(ipHelper == null) {
+				ipHelper = new Helper(filename(ip, port), 0);
+				helpers.put(ip, ipHelper);
+			} 
+			ipHelper.processMsg(msg, timeDiff);
 		}
+	}
+	
+	public static String filename(String ip, int port) {
+		return ip.replace(".", "-") + "--" + port;
 	}
 	
 	public static Message getObject(byte[] yourBytes) {

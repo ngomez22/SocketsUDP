@@ -28,7 +28,7 @@ public class Client {
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress server = InetAddress.getByName(ip);
 		for (int i = 0; i < numMessages; i++) {
-			Message m = new Message(i + 1);
+			Message m = new Message(i + 1, numMessages);
 			byte[] object = messageToBytes(m);
 			DatagramPacket sendData = new DatagramPacket(object, object.length, server, port);
 			clientSocket.send(sendData);

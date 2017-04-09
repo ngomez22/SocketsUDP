@@ -34,6 +34,7 @@ public class Server {
 			Message msg = getObject(receivePacket.getData());
 			String ip = receivePacket.getAddress().toString();
 			int port = receivePacket.getPort();
+			System.out.println("Equal Hash: "+digest(receivePacket.getData(), objLength));
 			long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
 			Helper ipHelper = helpers.get(ip);
 			if(ipHelper == null) {
@@ -46,15 +47,14 @@ public class Server {
 	
 	private static boolean digest(byte[] msg, int objLength) {
 		boolean res = false;
-		byte[] content = new byte[objLength];
-		byte[] hashBytes = new byte[msg.length - objLength];
-		System.out.println(msg.length);
-		for(int i = 0; i < msg.length; i++)
+		byte[] content = new byte[81];
+		byte[] hashBytes = new byte[16];
+		for(int i = 0; i < 97; i++)
 		{
 			
-			if(i >= objLength-1)
+			if(i > 80)
 			{
-				hashBytes[i] = msg[i];
+				hashBytes[i-81] = msg[i];
 			}
 			else
 			{

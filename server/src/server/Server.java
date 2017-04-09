@@ -46,7 +46,9 @@ public class Server {
 	}
 	
 	public static String filename(String ip, int port) {
-		return ip.replace(".", "-") + "--" + port;
+		String filename = ip.replace(".", "-").replace("\\", "").replace("/", "") + ".txt"; 
+		System.out.println("Assigned " + filename + " to a new helper");
+		return filename;
 	}
 	
 	public static Message getObject(byte[] yourBytes) {

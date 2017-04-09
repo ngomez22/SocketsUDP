@@ -17,7 +17,7 @@ public class Connection extends JPanel implements ActionListener {
 	private JLabel portLabel;
 	private JTextField portText;
 	private JLabel messagesLabel;
-	private JSpinner messagesText;
+	private JTextField messagesText;
 	private JButton connect;
 	
 	public Connection (GUI gui) {
@@ -40,9 +40,8 @@ public class Connection extends JPanel implements ActionListener {
 	    JPanel options = new JPanel(new BorderLayout());
 	    options.add(ipPanel, BorderLayout.CENTER);
 	    options.add(portPanel, BorderLayout.EAST);
-	    
-	    SpinnerModel model = new SpinnerNumberModel(10000, 10, 1000000, 10);     
-	    messagesText = new JSpinner(model);
+	     
+	    messagesText = new JTextField("1000");
 	    messagesLabel = new JLabel("Number of objects to send:");
 	    
 	    JPanel objects = new JPanel(new BorderLayout());
@@ -72,7 +71,7 @@ public class Connection extends JPanel implements ActionListener {
 	public int getNumberOfMessages() {
 		int num = -1;
 		try {
-			num = (Integer)messagesText.getValue();
+			num = Integer.parseInt(messagesText.getText());
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(gui, "Please select a valid number of messages", "Error", JOptionPane.ERROR_MESSAGE); 
 		}

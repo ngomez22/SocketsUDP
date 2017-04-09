@@ -16,6 +16,7 @@ import message.Message;
 public class Server {
 	
 	public static HashMap<String, Helper> helpers;
+	private static int corruptedPackets = 0;
 	
 	public static void main(String args[]) throws Exception {
 		helpers = new HashMap<>();
@@ -31,17 +32,25 @@ public class Server {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
 			int objLength = receivePacket.getLength();
-			Message msg = getObject(receivePacket.getData());
-			String ip = receivePacket.getAddress().toString();
-			int port = receivePacket.getPort();
-			System.out.println("Equal Hash: "+digest(receivePacket.getData(), objLength));
-			long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
-			Helper ipHelper = helpers.get(ip);
-			if(ipHelper == null) {
-				ipHelper = new Helper(filename(ip, port), msg.getTotal());
-				helpers.put(ip, ipHelper);
-			} 
-			ipHelper.processMsg(msg, timeDiff);
+			if(digest(receivePacket.getData(), objLength))
+			{
+				Message msg = getObject(receivePacket.getData());
+				String ip = receivePacket.getAddress().toString();
+				int port = receivePacket.getPort();
+				
+				long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
+				Helper ipHelper = helpers.get(ip);
+				if(ipHelper == null) {
+					ipHelper = new Helper(filename(ip, port), msg.getTotal());
+					helpers.put(ip, ipHelper);
+				} 
+				ipHelper.processMsg(msg, timeDiff);
+			}
+			else{
+				corruptedPackets ++;
+			}
+			
+			
 		}
 	}
 	

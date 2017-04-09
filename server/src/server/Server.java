@@ -1,15 +1,10 @@
 package server;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -30,14 +25,12 @@ public class Server {
 		}
 		DatagramSocket serverSocket = new DatagramSocket(serverPort);
 		byte[] receiveData = new byte[1024];
-		byte[] sendData = new byte[1024];
+		System.out.println("Started server in port " + serverPort);
 		
-		while (true) {
+ 		while (true) {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
 			int objLength = receivePacket.getLength();
-			System.out.println(receivePacket.getData().length);
-			System.out.println("Llego bien: " +digest(receivePacket.getData(), objLength));	
 			Message msg = getObject(receivePacket.getData());
 			String ip = receivePacket.getAddress().toString();
 			int port = receivePacket.getPort();
@@ -83,7 +76,7 @@ public class Server {
 	public static String filename(String ip, int port) {
 		String filename = ip.replace(".", "-").replace("\\", "").replace("/", "") + ".txt"; 
 		System.out.println("Assigned " + filename + " to a new helper");
-		return filename;
+		return "data/" + filename;
 	}
 	
 	public static Message getObject(byte[] yourBytes) {

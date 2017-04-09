@@ -16,6 +16,7 @@ import message.Message;
 public class Server {
 	
 	public static HashMap<String, Helper> helpers;
+	private static int corruptedPackets = 0;
 	
 	public static void main(String args[]) throws Exception {
 		helpers = new HashMap<>();
@@ -31,30 +32,38 @@ public class Server {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
 			int objLength = receivePacket.getLength();
-			Message msg = getObject(receivePacket.getData());
-			String ip = receivePacket.getAddress().toString();
-			int port = receivePacket.getPort();
-			long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
-			Helper ipHelper = helpers.get(ip);
-			if(ipHelper == null) {
-				ipHelper = new Helper(filename(ip, port), msg.getTotal());
-				helpers.put(ip, ipHelper);
-			} 
-			ipHelper.processMsg(msg, timeDiff);
+			if(digest(receivePacket.getData(), objLength))
+			{
+				Message msg = getObject(receivePacket.getData());
+				String ip = receivePacket.getAddress().toString();
+				int port = receivePacket.getPort();
+				
+				long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
+				Helper ipHelper = helpers.get(ip);
+				if(ipHelper == null) {
+					ipHelper = new Helper(filename(ip, port), msg.getTotal());
+					helpers.put(ip, ipHelper);
+				} 
+				ipHelper.processMsg(msg, timeDiff);
+			}
+			else{
+				corruptedPackets ++;
+			}
+			
+			
 		}
 	}
 	
 	private static boolean digest(byte[] msg, int objLength) {
 		boolean res = false;
-		byte[] content = new byte[objLength];
-		byte[] hashBytes = new byte[msg.length - objLength];
-		System.out.println(msg.length);
-		for(int i = 0; i < msg.length; i++)
+		byte[] content = new byte[81];
+		byte[] hashBytes = new byte[16];
+		for(int i = 0; i < 97; i++)
 		{
 			
-			if(i >= objLength-1)
+			if(i > 80)
 			{
-				hashBytes[i] = msg[i];
+				hashBytes[i-81] = msg[i];
 			}
 			else
 			{

@@ -41,7 +41,8 @@ public class Client {
 			Message m = new Message(i + 1, numMessages);
 			byte[] object = messageToBytes(m);
 			byte[] toSend = digest(object);
-			DatagramPacket sendData = new DatagramPacket(toSend, object.length, server, port);
+			System.out.println(toSend.length);
+			DatagramPacket sendData = new DatagramPacket(toSend, toSend.length, server, port);
 			clientSocket.send(sendData);
 			System.out.println("Sent object #" + i + " at " + m.getTimestamp());
 		}

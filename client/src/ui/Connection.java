@@ -9,8 +9,7 @@ import javax.swing.border.*;
 
 public class Connection extends JPanel implements ActionListener {
 	
-	public static final String CONNECT = "CONNECT";
-	public static final String DISCONNECT = "DISCONNECT";
+	public static final String SEND = "SEND";
 	
 	private GUI gui;
 	private JLabel ipLabel;
@@ -24,7 +23,7 @@ public class Connection extends JPanel implements ActionListener {
 	public Connection (GUI gui) {
 		this.gui = gui;
 		setLayout( new BorderLayout() );
-	    setBorder( new TitledBorder( "Connection" ) );
+		setBorder(new TitledBorder("Configuration"));
 	    
 	    ipLabel = new JLabel("IP:");
 	    ipText = new JTextField("127.0.0.1");
@@ -63,17 +62,9 @@ public class Connection extends JPanel implements ActionListener {
 	}
 	
 	public void connectButton() {
-		connect.setText("Conectar");
+		connect.setText("Send");
 		connect.setBackground(new Color(60, 200, 100));
-	    connect.setActionCommand(CONNECT);
-	    revalidate();
-	    repaint();
-	}
-	
-	public void disconnectButton() {
-		connect.setText("Desconectar");
-	    connect.setBackground(new Color(190, 60, 60));
-	    connect.setActionCommand(DISCONNECT);
+	    connect.setActionCommand(SEND);
 	    revalidate();
 	    repaint();
 	}
@@ -97,18 +88,15 @@ public class Connection extends JPanel implements ActionListener {
 		try {
 			num = Integer.parseInt(portText.getText());
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(gui, "Please select a valid number of messages", "Error", JOptionPane.ERROR_MESSAGE); 
+			JOptionPane.showMessageDialog(gui, "Please select a valid port", "Error", JOptionPane.ERROR_MESSAGE); 
 		}
 		return num;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals(CONNECT)) {
+		if(e.getActionCommand().equals(SEND)) {
 			gui.connect();
-		}
-		if(e.getActionCommand().equals(DISCONNECT)) {
-			gui.disconnect();
 		}
 	}
 }

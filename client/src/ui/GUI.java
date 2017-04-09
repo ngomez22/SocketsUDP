@@ -19,7 +19,7 @@ public class GUI extends JFrame {
 		desktop = Desktop.getDesktop();
 		connection = new Connection(this);
 
-		setSize(530, 530);
+		setSize(530, 143);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setTitle("UDP Client");
 		setLocationRelativeTo(null);

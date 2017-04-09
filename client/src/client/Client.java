@@ -9,6 +9,8 @@ import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import message.Message;
 
@@ -30,11 +32,31 @@ public class Client {
 		for (int i = 0; i < numMessages; i++) {
 			Message m = new Message(i + 1, numMessages);
 			byte[] object = messageToBytes(m);
-			DatagramPacket sendData = new DatagramPacket(object, object.length, server, port);
+			byte[] toSend = digest(object);
+			DatagramPacket sendData = new DatagramPacket(toSend, object.length, server, port);
 			clientSocket.send(sendData);
 			System.out.println("Sent object #" + i + " at " + m.getTimestamp());
 		}
 		clientSocket.close();
+	}
+
+	private byte[] digest(byte[] object) {
+		byte[] res = null;
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("MD5");
+			byte[] messageDigest = md.digest(object);
+			byte[] combined = new byte[object.length + messageDigest.length];
+			for (int i = 0; i < combined.length; ++i)
+			{
+			    combined[i] = i < object.length ? object[i] : messageDigest[i - object.length];
+			}
+			res = combined;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return res;
+		
 	}
 
 	public byte[] messageToBytes(Message m) {

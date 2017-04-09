@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import message.Message;
@@ -32,6 +35,9 @@ public class Server {
 		while (true) {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
+			int objLength = receivePacket.getLength();
+			System.out.println(receivePacket.getData().length);
+			System.out.println("Llego bien: " +digest(receivePacket.getData(), objLength));	
 			Message msg = getObject(receivePacket.getData());
 			String ip = receivePacket.getAddress().toString();
 			int port = receivePacket.getPort();
@@ -45,6 +51,35 @@ public class Server {
 		}
 	}
 	
+	private static boolean digest(byte[] msg, int objLength) {
+		boolean res = false;
+		byte[] content = new byte[objLength];
+		byte[] hashBytes = new byte[msg.length - objLength];
+		System.out.println(msg.length);
+		for(int i = 0; i < msg.length; i++)
+		{
+			
+			if(i >= objLength-1)
+			{
+				hashBytes[i] = msg[i];
+			}
+			else
+			{
+				content[i] = msg [i];
+			}
+		}
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("MD5");
+			byte[] calculatedHash = md.digest(content);
+			res = Arrays.equals(calculatedHash, hashBytes);
+			
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
 	public static String filename(String ip, int port) {
 		return ip.replace(".", "-") + "--" + port;
 	}

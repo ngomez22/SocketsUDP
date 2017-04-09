@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -24,14 +25,13 @@ public class Server {
 		byte[] sendData = new byte[1024];
 		
 		while (true) {
-			DatagramPacket receivePacket = new DatagramPacket(receiveData,
-					receiveData.length);
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
-			Message recibido = getObject(receivePacket.getData());
-			System.out.println(recibido.getSeqNun());
-			System.out.println(recibido.getTimestamp());
+			Message msg = getObject(receivePacket.getData());
 			InetAddress IPAddress = receivePacket.getAddress();
 			int port = receivePacket.getPort();
+			long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
+			System.out.println(msg.getSeqNun() + " from " + IPAddress + ": " + timeDiff);
 		}
 	}
 	

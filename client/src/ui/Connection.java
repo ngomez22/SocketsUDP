@@ -41,7 +41,7 @@ public class Connection extends JPanel implements ActionListener {
 	    options.add(ipPanel, BorderLayout.CENTER);
 	    options.add(portPanel, BorderLayout.EAST);
 	    
-	    SpinnerModel model = new SpinnerNumberModel(100, 10, 10000, 5);     
+	    SpinnerModel model = new SpinnerNumberModel(100000, 10, 1000000, 10);     
 	    messagesText = new JSpinner(model);
 	    messagesLabel = new JLabel("Number of objects to send:");
 	    

@@ -38,7 +38,7 @@ public class Server {
 			long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
 			Helper ipHelper = helpers.get(ip);
 			if(ipHelper == null) {
-				ipHelper = new Helper(filename(ip, port), 0);
+				ipHelper = new Helper(filename(ip, port), msg.getTotal());
 				helpers.put(ip, ipHelper);
 			} 
 			ipHelper.processMsg(msg, timeDiff);

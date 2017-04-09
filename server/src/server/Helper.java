@@ -5,40 +5,40 @@ import message.Message;
 public class Helper {
 	
 	private String filename;
-	private int currentSeqNum;
-	private int lostCount;
+	private int count;
+	private int total;
+	private long diffSum;
+	private boolean[] received;
 	
-	public Helper(String filename, int currentSeqNum) {
+	public Helper(String filename, int total) {
 		this.filename = filename;
-		this.currentSeqNum = currentSeqNum;	
-		this.lostCount = 0;
+		this.count = 0;
+		this.total = total;
+		this.diffSum = 0;
+		this.received = new boolean[total];
 	}
 	
 	public void processMsg(Message m, long timeDiff) {
-		int newCurrent = m.getSeqNum();
-		System.out.println(newCurrent + ": " + timeDiff + " (from " + filename + ")");
+		System.out.println(m.getSeqNum() + ": " + timeDiff + " (from " + filename + ")");
+		count++;
+		diffSum += timeDiff;
+		if(m.getSeqNum() == total) {
+			done();
+		}
 	}
 
 
 	public String getFilename() {
 		return filename;
 	}
-
-
-	public int getCurrentSeqNum() {
-		return currentSeqNum;
-	}
-
-
-	public void setCurrentSeqNum(int currentSeqNum) {
-		this.currentSeqNum = currentSeqNum;
-	}
 	
 	public int getLostCount() {
-		return lostCount;
+		return total - count;
 	}
 	
-	public void incLostCount(int inc) {
-		lostCount += inc;
+	public void done() {
+		System.out.println("----DONE----");
+		System.out.println("Received " + count + "/" + total);
+		System.out.println("Avg. delay was " + diffSum/count);
 	}
 }

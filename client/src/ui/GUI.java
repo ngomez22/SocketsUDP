@@ -30,8 +30,8 @@ public class GUI extends JFrame {
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				if (client != null) {
-					int confirmed = JOptionPane.showConfirmDialog(null, "Are you sure you want to end the connection?",
-							"TCP Client", JOptionPane.YES_NO_OPTION);
+					int confirmed = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?",
+							"UPD Client", JOptionPane.YES_NO_OPTION);
 					if (confirmed == JOptionPane.YES_OPTION) {
 						dispose();
 					}

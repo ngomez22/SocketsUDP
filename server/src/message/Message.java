@@ -21,4 +21,8 @@ public class Message implements Serializable {
 	public long getTimestamp() {
 		return timestamp;
 	}
+	
+	public int getTotal() {
+		return total;
+	}
 }

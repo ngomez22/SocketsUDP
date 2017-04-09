@@ -1,6 +1,9 @@
 package client;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
@@ -11,10 +14,15 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import message.Message;
 
 public class Client {
+
+	public static final String FILE = "files/small.jpg";
+	public static final int BUFFER_SIZE = 1024;
 
 	private String ip;
 	private int port;
@@ -40,6 +48,28 @@ public class Client {
 		clientSocket.close();
 	}
 
+	public void sendFile() {
+		try {
+			ArrayList<byte[]> data = new ArrayList<>();
+			
+			File file = new File(FILE);
+			FileInputStream fis = new FileInputStream(file);
+			BufferedInputStream bis = new BufferedInputStream(fis);
+
+			long fileLength = file.length();
+
+			byte[] contents = new byte[BUFFER_SIZE];
+			long current = 0;
+			int count;
+			while ((count = fis.read(contents)) > -1) {
+				data.add(Arrays.copyOf(contents, contents.length));
+				current += count;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	private byte[] digest(byte[] object) {
 		byte[] res = null;
 		MessageDigest md;
@@ -47,16 +77,15 @@ public class Client {
 			md = MessageDigest.getInstance("MD5");
 			byte[] messageDigest = md.digest(object);
 			byte[] combined = new byte[object.length + messageDigest.length];
-			for (int i = 0; i < combined.length; ++i)
-			{
-			    combined[i] = i < object.length ? object[i] : messageDigest[i - object.length];
+			for (int i = 0; i < combined.length; ++i) {
+				combined[i] = i < object.length ? object[i] : messageDigest[i - object.length];
 			}
 			res = combined;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 		return res;
-		
+
 	}
 
 	public byte[] messageToBytes(Message m) {

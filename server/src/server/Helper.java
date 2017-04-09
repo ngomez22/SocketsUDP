@@ -19,6 +19,10 @@ public class Helper {
 	}
 	
 	public void processMsg(Message m, long timeDiff) {
+		if(m.getTotal() != total) {
+			done();
+			total = m.getTotal();
+		}
 		System.out.println(m.getSeqNum() + ": " + timeDiff + " (from " + filename + ")");
 		count++;
 		diffSum += timeDiff;

@@ -34,7 +34,7 @@ public class Helper {
 			done();
 			total = m.getTotal();
 		}
-		bw.write(m.getSeqNum() + ": " + timeDiff + "\n");
+		System.out.println(m.getSeqNum() + ": " + timeDiff + "\n");
 		chunks.add(m.getChunkOfFile());
 		count++;
 		diffSum += timeDiff;
@@ -63,6 +63,7 @@ public class Helper {
 				fileList.add(chunks.get(i)[j]);
 			}
 		}
+
 		file = fileList.toArray(new Byte[fileList.size()]);	
 		int j = 0;
 		byte[] bytes = new byte[file.length];
@@ -80,12 +81,14 @@ public class Helper {
        catch(IOException ioe)  {
                System.out.println("IOException : " + ioe);
         }
+
+
 	}
 	
 	public void done() throws IOException {
-		bw.write("----DONE----\n");
-		bw.write("Received " + count + "/" + total + "\n");
-		bw.write("Avg. delay was " + diffSum/count + "\n");
+		System.out.println("----DONE----\n");
+		System.out.println("Received " + count + "/" + total + "\n");
+		System.out.println("Avg. delay was " + diffSum/count + "\n");
 		
 		join();
 		

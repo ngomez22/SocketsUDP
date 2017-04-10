@@ -10,6 +10,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+
 import message.Message;
 
 
@@ -17,7 +19,7 @@ public class Server {
 	
 	public static HashMap<String, Helper> helpers;
 	private static int corruptedPackets = 0;
-	
+		
 	public static void main(String args[]) throws Exception {
 		helpers = new HashMap<>();
 		int serverPort = 4321;
@@ -27,33 +29,47 @@ public class Server {
 		DatagramSocket serverSocket = new DatagramSocket(serverPort);
 		byte[] receiveData = new byte[1024];
 		System.out.println("Started server in port " + serverPort);
-		
  		while (true) {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
 			int objLength = receivePacket.getLength();
-			if(digest(receivePacket.getData(), objLength))
-			{
-				Message msg = getObject(receivePacket.getData());
-				String ip = receivePacket.getAddress().toString();
-				int port = receivePacket.getPort();
-				
-				long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
-				Helper ipHelper = helpers.get(ip);
-				if(ipHelper == null) {
-					ipHelper = new Helper(filename(ip, port), msg.getTotal());
-					helpers.put(ip, ipHelper);
-				} 
-				ipHelper.processMsg(msg, timeDiff);
-			}
-			else{
-				corruptedPackets ++;
-			}
+			Message msg = getObject(receivePacket.getData());
 			
+			System.out.println(validateHash(msg));
+			String ip = receivePacket.getAddress().toString();
+			int port = receivePacket.getPort();
 			
+			long timeDiff = System.currentTimeMillis() - msg.getTimestamp();
+			Helper ipHelper = helpers.get(ip);
+			if(ipHelper == null) {
+				ipHelper = new Helper(filename(ip, port), msg.getTotal());
+				helpers.put(ip, ipHelper);
+			} 
+			ipHelper.processMsg(msg, timeDiff);	
 		}
 	}
 	
+	private static boolean validateHash(Message msg) {
+		byte[] receivedChunk = msg.getChunkOfFile();
+		MessageDigest md5;
+		String hex ="";
+		try {
+			md5 = MessageDigest.getInstance("MD5");
+			hex = (new HexBinaryAdapter()).marshal(md5.digest(receivedChunk));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		if(hex.equals(msg.getHashCode()))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+	}
+
 	private static boolean digest(byte[] msg, int objLength) {
 		boolean res = false;
 		byte[] content = new byte[81];

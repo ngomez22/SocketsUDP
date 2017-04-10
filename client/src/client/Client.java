@@ -17,12 +17,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+
 import message.Message;
 
 public class Client {
 
-	public static final String FILE = "files/small.jpg";
-	public static final int BUFFER_SIZE = 1024;
+	public static final String FILE = "files/small.png";
+	public static final int BUFFER_SIZE = 800;
 
 	private String ip;
 	private int port;
@@ -34,31 +36,34 @@ public class Client {
 		this.numMessages = numMessages;
 	}
 
+	
 	public void send() throws Exception {
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress server = InetAddress.getByName(ip);
-		for (int i = 0; i < numMessages; i++) {
-			Message m = new Message(i + 1, numMessages);
+		ArrayList<byte[]> chunks = getFile();
+		for (int i = 0; i < chunks.size(); i++) {
+			byte[] actual = chunks.get(i);
+			String hash = digestFileToString(actual);
+			Message m = new Message(i + 1, chunks.size(), hash, actual);
 			byte[] object = messageToBytes(m);
-			byte[] toSend = digest(object);
-			System.out.println(toSend.length);
-			DatagramPacket sendData = new DatagramPacket(toSend, toSend.length, server, port);
+			System.out.println(object.length);
+			DatagramPacket sendData = new DatagramPacket(object, object.length, server, port);
 			clientSocket.send(sendData);
 			System.out.println("Sent object #" + i + " at " + m.getTimestamp());
 		}
 		clientSocket.close();
 	}
 
-	public void sendFile() {
+	public ArrayList<byte[]> getFile() {
+		ArrayList<byte[]> data = new ArrayList<>();
 		try {
-			ArrayList<byte[]> data = new ArrayList<>();
+			
 			
 			File file = new File(FILE);
 			FileInputStream fis = new FileInputStream(file);
 			BufferedInputStream bis = new BufferedInputStream(fis);
 
 			long fileLength = file.length();
-
 			byte[] contents = new byte[BUFFER_SIZE];
 			long current = 0;
 			int count;
@@ -66,9 +71,11 @@ public class Client {
 				data.add(Arrays.copyOf(contents, contents.length));
 				current += count;
 			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return data;
 	}
 
 	private byte[] digest(byte[] object) {
@@ -86,6 +93,20 @@ public class Client {
 			e.printStackTrace();
 		}
 		return res;
+
+	}
+	
+	private String digestFileToString(byte[] object) {
+		MessageDigest md5;
+		String hex ="";
+		try {
+			md5 = MessageDigest.getInstance("MD5");
+			hex = (new HexBinaryAdapter()).marshal(md5.digest(object));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		
+		return hex;
 
 	}
 

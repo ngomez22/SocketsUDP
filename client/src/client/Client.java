@@ -28,13 +28,11 @@ public class Client {
 
 	private String ip;
 	private int port;
-	private int numMessages;
 	private String actualHash = "";
 
-	public Client(String ip, int port, int numMessages) {
+	public Client(String ip, int port) {
 		this.ip = ip;
 		this.port = port;
-		this.numMessages = numMessages;
 	}
 
 	

@@ -54,7 +54,7 @@ public class GUI extends JFrame {
 		int numMessages = connection.getNumberOfMessages();
 		if(port != -1 && numMessages != -1 && !ip.equals("")){			
 			try {
-				client = new Client(ip, port, numMessages);
+				client = new Client(ip, port);
 				client.send();
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this, "Error sending objects", "Error", JOptionPane.ERROR_MESSAGE);

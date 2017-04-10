@@ -35,7 +35,17 @@ public class Server {
 			int objLength = receivePacket.getLength();
 			Message msg = getObject(receivePacket.getData());
 			
-			System.out.println(validateHash(msg));
+			if(msg.getSeqNum() == msg.getTotal())
+			{
+				if(validateHash(msg))
+				{
+					System.out.println("Archivo recibido correctamente.");
+				}
+				else
+				{
+					System.out.println("Archivo recibido esta corrupto.");
+				}
+			}
 			String ip = receivePacket.getAddress().toString();
 			int port = receivePacket.getPort();
 			

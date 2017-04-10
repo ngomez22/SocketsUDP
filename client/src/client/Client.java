@@ -29,6 +29,7 @@ public class Client {
 	private String ip;
 	private int port;
 	private int numMessages;
+	private String actualHash = "";
 
 	public Client(String ip, int port, int numMessages) {
 		this.ip = ip;
@@ -43,8 +44,7 @@ public class Client {
 		ArrayList<byte[]> chunks = getFile();
 		for (int i = 0; i < chunks.size(); i++) {
 			byte[] actual = chunks.get(i);
-			String hash = digestFileToString(actual);
-			Message m = new Message(i + 1, chunks.size(), hash, actual);
+			Message m = new Message(i + 1, chunks.size(), actualHash, actual);
 			byte[] object = messageToBytes(m);
 			System.out.println(object.length);
 			DatagramPacket sendData = new DatagramPacket(object, object.length, server, port);
@@ -62,7 +62,10 @@ public class Client {
 			File file = new File(FILE);
 			FileInputStream fis = new FileInputStream(file);
 			BufferedInputStream bis = new BufferedInputStream(fis);
-
+			
+			byte[] fullFile = new byte[(int) file.length()];
+			fis.read(fullFile);
+			actualHash=digestFileToString(fullFile);
 			long fileLength = file.length();
 			byte[] contents = new byte[BUFFER_SIZE];
 			long current = 0;

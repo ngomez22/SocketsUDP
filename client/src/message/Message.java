@@ -7,8 +7,10 @@ public class Message implements Serializable {
 	private int seqNum;
 	private int total;
 	private long timestamp;
+	private String hashCode;
 	private byte[] chunkOfFile;
 
+	public Message(int seqNum, int total, String hash, byte[] chunk) {
 		this.seqNum = seqNum;
 		this.total = total;
 		this.timestamp = System.currentTimeMillis();
@@ -28,6 +30,7 @@ public class Message implements Serializable {
 		return total;
 	}
 
+	public String getHashCode() {
 		return hashCode;
 	}
 

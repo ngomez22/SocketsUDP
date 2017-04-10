@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import message.Message;
 
@@ -14,6 +16,8 @@ public class Helper {
 	private int count;
 	private int total;
 	private long diffSum;
+	private ArrayList<byte[]> chunks;
+	private Byte[] file;
 	
 	public Helper(String filename, int total) throws FileNotFoundException {
 		this.filename = filename;
@@ -21,6 +25,7 @@ public class Helper {
 		this.count = 0;
 		this.total = total;
 		this.diffSum = 0;
+		this.chunks = new ArrayList();
 	}
 	
 	public void processMsg(Message m, long timeDiff) throws IOException {
@@ -29,6 +34,7 @@ public class Helper {
 			total = m.getTotal();
 		}
 		bw.write(m.getSeqNum() + ": " + timeDiff + "\n");
+		chunks.add(m.getChunkOfFile());
 		count++;
 		diffSum += timeDiff;
 		if(m.getSeqNum() == total) {
@@ -49,13 +55,25 @@ public class Helper {
 		return total - count;
 	}
 	
+	public void join() {
+		ArrayList<Byte> fileList = new ArrayList<>();
+		for(int i=0; i<chunks.size(); i++) {
+			for(int j=0; j<chunks.get(i).length; j++) {
+				fileList.add(chunks.get(i)[j]);
+			}
+		}
+		file = fileList.toArray(new Byte[fileList.size()]);	
+	}
+	
 	public void done() throws IOException {
 		bw.write("----DONE----\n");
 		bw.write("Received " + count + "/" + total + "\n");
 		bw.write("Avg. delay was " + diffSum/count + "\n");
+		
+		join();
+		
 		count = 0;
 		diffSum = 0;
 		total = -1;
-		
 	}
 }

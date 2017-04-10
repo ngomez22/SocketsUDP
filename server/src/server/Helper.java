@@ -2,6 +2,7 @@ package server;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -63,6 +64,22 @@ public class Helper {
 			}
 		}
 		file = fileList.toArray(new Byte[fileList.size()]);	
+		int j = 0;
+		byte[] bytes = new byte[file.length];
+		for(Byte b: file)
+		    bytes[j++] = b.byteValue();
+		String strFilePath = "downloads/small.png";
+          try {
+               FileOutputStream fos = new FileOutputStream(strFilePath);
+               fos.write(bytes);
+               fos.close();
+         }
+        catch(FileNotFoundException ex)   {
+               System.out.println("FileNotFoundException : " + ex);
+        }
+       catch(IOException ioe)  {
+               System.out.println("IOException : " + ioe);
+        }
 	}
 	
 	public void done() throws IOException {

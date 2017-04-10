@@ -63,9 +63,9 @@ public class Client {
 			FileInputStream fis = new FileInputStream(file);
 			BufferedInputStream bis = new BufferedInputStream(fis);
 
-			byte[] fullFile = new byte[(int) file.length()];
+			/*byte[] fullFile = new byte[(int) file.length()];
 			fis.read(fullFile);
-			actualHash=digestFileToString(fullFile);
+			actualHash=digestFileToString(fullFile);*/
 			
 			long fileLength = file.length();
 			byte[] contents = new byte[BUFFER_SIZE];
